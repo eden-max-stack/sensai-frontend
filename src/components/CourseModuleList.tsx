@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-import { ChevronUp, ChevronDown, ChevronRight, ChevronDown as ChevronDownExpand, Plus, HelpCircle, Trash, Clipboard, Check, Loader2, Copy, FileText, Brain, BookOpen, PenSquare, FileQuestion, ClipboardList, Lock, Ban } from "lucide-react";
+import { ChevronUp, ChevronDown, ChevronRight, ChevronDown as ChevronDownExpand, Plus, HelpCircle, Trash, Clipboard, Check, Loader2, Copy, FileText, Brain, BookOpen, PenSquare, FileQuestion, ClipboardList, Lock, Ban, Sparkle } from "lucide-react";
 import { Module, ModuleItem, Quiz } from "@/types/course";
 import { QuizQuestion } from "@/types/quiz"; // Import from types instead
 import CourseItemDialog from "@/components/CourseItemDialog";
 import ConfirmationDialog from "@/components/ConfirmationDialog";
 import Tooltip from "@/components/Tooltip"; // Import the Tooltip component
 import { formatScheduleDate } from "@/lib/utils/dateFormat"; // Import the utility function
+import GenerateQuestionsUsingAI from "./GenerateQuestionsUsingAI";
 
 
 interface CourseModuleListProps {
@@ -849,6 +850,9 @@ export default function CourseModuleList({
                                                                 </span>
                                                             </Tooltip>
                                                         )}
+                                                        {item.type === 'material' && <Tooltip content="Generate Quiz using AI" position="top">
+                                                            <GenerateQuestionsUsingAI taskId={item.id} />
+                                                        </Tooltip>}
                                                         <Tooltip content="Duplicate as draft" position="top">
                                                             <button
                                                                 onClick={(e) => {

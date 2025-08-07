@@ -773,7 +773,7 @@ export default function LearnerQuizView({
                     ...(responseType === 'audio' && { response_type: "audio" }),
                     ...(responseType === 'code' && { response_type: "code" }),
                     chat_history: formattedChatHistory,
-                    question: {
+                    question: { 
                         "blocks": validQuestions[currentQuestionIndex].content,
                         "response_type": validQuestions[currentQuestionIndex].config.responseType,
                         "answer": validQuestions[currentQuestionIndex].config.correctAnswer,
@@ -783,8 +783,8 @@ export default function LearnerQuizView({
                         "coding_languages": validQuestions[currentQuestionIndex].config.codingLanguages,
                         "context": getKnowledgeBaseContent(validQuestions[currentQuestionIndex].config as QuizQuestionConfig)
                     },
-                    user_id: userId,
-                    task_id: taskId,
+                    user_id: parseInt(userId),
+                    task_id: parseInt(taskId),
                     task_type: 'quiz'
                 };
             } else {

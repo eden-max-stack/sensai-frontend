@@ -39,10 +39,6 @@ export async function registerUserWithBackend(
       }),
     });
 
-    if (!response.ok) {
-      throw new Error(`Backend auth failed: ${response.status}`);
-    }
-
     // Return the raw response data - assuming it contains an 'id' field directly
     const data = await response.json();
     

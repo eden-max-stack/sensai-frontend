@@ -618,6 +618,7 @@ export default function CreateCourse() {
             // For learning materials, we don't need to fetch content here
             // The LearningMaterialEditor will fetch its own data using the taskId
             setActiveItem(item);
+            console.log(`item: ${item.content}`);
             setActiveModuleId(moduleId);
             setIsPreviewMode(false);
             setIsDialogOpen(true);

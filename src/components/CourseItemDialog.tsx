@@ -14,7 +14,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { formatScheduleDate } from "@/lib/utils/dateFormat";
 import { useAuth } from "@/lib/auth";
-
+    
 // Dynamically import the editor components
 const DynamicLearningMaterialEditor = dynamic(
     () => import("./LearningMaterialEditor"),
@@ -910,72 +910,74 @@ const CourseItemDialog: React.FC<CourseItemDialogProps> = ({
                         }}
                     >
                         {activeItem?.type === 'material' ? (
-                            <DynamicLearningMaterialEditor
-                                ref={learningMaterialEditorRef}
-                                key={`material-${activeItem.id}-${isEditMode}`}
-                                readOnly={activeItem.status === 'published' && !isEditMode}
-                                showPublishConfirmation={showPublishConfirmation}
-                                onPublishConfirm={onPublishConfirm}
-                                onPublishCancel={onPublishCancel}
-                                taskId={activeItem.id}
-                                isDarkMode={true}
-                                scheduledPublishAt={scheduledDate ? scheduledDate.toISOString() : null}
-                                onPublishSuccess={(updatedData?: TaskData) => {
-                                    // Handle publish success
-                                    if (updatedData) {
-                                        // Properly update the UI state first
-                                        // This will transform the publish button to edit button
-                                        if (activeItem && updatedData.status === 'published') {
-                                            activeItem.status = 'published';
-                                            activeItem.title = updatedData.title;
-                                            // Add the scheduled_publish_at value from updatedData to activeItem
-                                            activeItem.scheduled_publish_at = updatedData.scheduled_publish_at;
+                            <div>
+                                <DynamicLearningMaterialEditor
+                                    ref={learningMaterialEditorRef}
+                                    key={`material-${activeItem.id}-${isEditMode}`}
+                                    readOnly={activeItem.status === 'published' && !isEditMode}
+                                    showPublishConfirmation={showPublishConfirmation}
+                                    onPublishConfirm={onPublishConfirm}
+                                    onPublishCancel={onPublishCancel}
+                                    taskId={activeItem.id}
+                                    isDarkMode={true}
+                                    scheduledPublishAt={scheduledDate ? scheduledDate.toISOString() : null}
+                                    onPublishSuccess={(updatedData?: TaskData) => {
+                                        // Handle publish success
+                                        if (updatedData) {
+                                            // Properly update the UI state first
+                                            // This will transform the publish button to edit button
+                                            if (activeItem && updatedData.status === 'published') {
+                                                activeItem.status = 'published';
+                                                activeItem.title = updatedData.title;
+                                                // Add the scheduled_publish_at value from updatedData to activeItem
+                                                activeItem.scheduled_publish_at = updatedData.scheduled_publish_at;
 
-                                            if (updatedData.scheduled_publish_at) {
-                                                setScheduledDate(new Date(updatedData.scheduled_publish_at));
-                                            } else {
-                                                setScheduledDate(null);
+                                                if (updatedData.scheduled_publish_at) {
+                                                    setScheduledDate(new Date(updatedData.scheduled_publish_at));
+                                                } else {
+                                                    setScheduledDate(null);
+                                                }
+
+                                                if (updatedData.blocks) {
+                                                    // @ts-ignore - types may not perfectly match
+                                                    activeItem.content = updatedData.blocks;
+                                                }
                                             }
 
-                                            if (updatedData.blocks) {
-                                                // @ts-ignore - types may not perfectly match
-                                                activeItem.content = updatedData.blocks;
-                                            }
+                                            // Update will be handled by the parent component
+                                            onPublishConfirm();
+
+                                            // Show toast notification
+                                            const publishMessage = updatedData.scheduled_publish_at ? "Your learning material has been scheduled for publishing" : "Your learning material has been published";
+                                            displayToast("Published", publishMessage);
                                         }
+                                        // Hide the publish confirmation dialog
+                                        onSetShowPublishConfirmation(false);
+                                    }}
+                                    onSaveSuccess={(updatedData?: TaskData) => {
+                                        // Handle save success - similar to publish success but without status change
+                                        if (updatedData) {
+                                            // Update the activeItem with new title and content
+                                            if (activeItem) {
+                                                activeItem.title = updatedData.title;
+                                                // Add the scheduled_publish_at value when saving
+                                                activeItem.scheduled_publish_at = updatedData.scheduled_publish_at;
 
-                                        // Update will be handled by the parent component
-                                        onPublishConfirm();
-
-                                        // Show toast notification
-                                        const publishMessage = updatedData.scheduled_publish_at ? "Your learning material has been scheduled for publishing" : "Your learning material has been published";
-                                        displayToast("Published", publishMessage);
-                                    }
-                                    // Hide the publish confirmation dialog
-                                    onSetShowPublishConfirmation(false);
-                                }}
-                                onSaveSuccess={(updatedData?: TaskData) => {
-                                    // Handle save success - similar to publish success but without status change
-                                    if (updatedData) {
-                                        // Update the activeItem with new title and content
-                                        if (activeItem) {
-                                            activeItem.title = updatedData.title;
-                                            // Add the scheduled_publish_at value when saving
-                                            activeItem.scheduled_publish_at = updatedData.scheduled_publish_at;
-
-                                            if (updatedData.blocks) {
-                                                // @ts-ignore - types may not perfectly match
-                                                activeItem.content = updatedData.blocks;
+                                                if (updatedData.blocks) {
+                                                    // @ts-ignore - types may not perfectly match
+                                                    activeItem.content = updatedData.blocks;
+                                                }
                                             }
+
+                                            // Call the parent's save function
+                                            onSaveItem();
+
+                                            // Show toast notification for save success
+                                            displayToast("Saved", `Your learning material has been updated`);
                                         }
-
-                                        // Call the parent's save function
-                                        onSaveItem();
-
-                                        // Show toast notification for save success
-                                        displayToast("Saved", `Your learning material has been updated`);
-                                    }
-                                }}
-                            />
+                                    }}
+                                />
+                            </div>
                         ) : activeItem?.type === 'quiz' ? (
                             <DynamicQuizEditor
                                 ref={quizEditorRef}
