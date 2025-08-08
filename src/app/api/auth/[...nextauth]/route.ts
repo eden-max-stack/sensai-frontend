@@ -18,25 +18,16 @@ export const authOptions = {
   callbacks: {
     async jwt({ token, user, account }) {
       // If signing in for the first time, save user info in token
-      if (account && user) {
+      if (account?.provider === 'google' && !token.userId) {
         token.accessToken = account.access_token;
         token.idToken = account.id_token;
         
-        // If this is a Google signin, get userId from backend
-        if (account.provider === 'google') {
-          try {
-            const result = await registerUserWithBackend(user, account);
-            
-            // Extract the ID from the result
-            if (result && result.id) {
-              // Store the backend userId directly in the token
-              token.userId = result.id;
-            } else {
-              console.error("Backend response missing ID field");
-            }
-          } catch (error) {
-            console.error("Error storing backend user ID:", error);
-          }
+        const result = await registerUserWithBackend(user, account);
+
+        if (result?.id) {
+          token.userId = result.id;
+        } else {
+          console.error("Backend response missing ID field");
         }
       }
       

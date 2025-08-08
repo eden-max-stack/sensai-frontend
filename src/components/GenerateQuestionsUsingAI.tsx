@@ -33,13 +33,11 @@ const GenerateQuestionsUsingAI = ({
 
             // Send data to be preprocessed and have an AI agent run on it
             const generateQuestionsResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ai/generate-questions`, {
-                method: 'GET',      
+                method: 'POST',      
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({  
-                    content: learningMaterialData 
-            })})
+                body: JSON.stringify(learningMaterialData)})
             
             if (!generateQuestionsResponse.ok) {
                 throw new Error("Failed to generate questions");
